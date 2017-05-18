@@ -1,19 +1,23 @@
 #! /usr/bin/python
 
 import random
+import json
 
-twats = [
-    "I have been asking Director Comey & others, from the beginning of my administration, to find the LEAKERS in the intelligence community.....",
-    "...to terrorism and airline flight safety. Humanitarian reasons, plus I want Russia to greatly step up their fight against ISIS & terrorism.",
-    "As President I wanted to share with Russia (at an openly scheduled W.H. meeting) which I have the absolute right to do, facts pertaining....",
-    "China just agreed that the U.S. will be allowed to sell beef, and other major products, into China once again. This is REAL news!",
-    "As families prepare for summer vacations in our National Parks - Democrats threaten to close them and shut down the government. Terrible!"
+twaats = [
+    json.load(open('condensed_2017.json')),
+    json.load(open('condensed_2016.json')),
+    json.load(open('condensed_2015.json')),
+    json.load(open('condensed_2014.json')),
+    json.load(open('condensed_2013.json')),
+    json.load(open('condensed_2012.json')),
+    json.load(open('condensed_2011.json')),
+    json.load(open('condensed_2010.json')),
+    json.load(open('condensed_2009.json')),
 ]
 
 # a prefix is an array of one or more words
 # the markov chain is keyed by space separated prefixes
 class Prefix():
-    
     def __init__(self, size):
         self.size = size
         self.prfx = []
@@ -31,9 +35,9 @@ class Prefix():
 
 
 class Chain():
-    def __init__(self, size):
+    def __init__(self, size, chain=None):
         self.size = size
-        self.chain = {}
+        self.chain = {} if chain is None else chain
         
     def __str__(self):
         strangle = str(self.size)
@@ -44,13 +48,26 @@ class Chain():
     def rassle(self, twats):
         prefix = Prefix(self.size)
         for twat in twats.split(' '):
-            key = prefix.key()
-            self.chain.setdefault(key, []).append(twat)
-            prefix.shift(twat)
+            if (twat != ' ' and twat != ''):
+                key = prefix.key()
+                self.chain.setdefault(key, []).append(twat)
+                prefix.shift(twat)
+            
 
-c = Chain(2)
-c.rassle(twats[0])
-c.rassle(twats[1])
-c.rassle(twats[2])
-c.rassle(twats[3])
-print(c)
+for length in range(1, 11):
+    c = Chain(length)
+    for twats in twaats:
+        for twat in twats:
+            c.rassle(twat['text'])
+    filename = 'trumpov_' + str(length) + '.json'
+    json.dump(c.chain, open(filename, 'w'), indent=2)
+    print('wrote ' + filename)
+    topK = ''
+    topV = []
+    for key, value in c.chain.items():
+        if key.count(' ') == length - 1 and len(value) > len(topV):
+            topK = key
+            topV = value
+    print('favorite key at length ' + str(length) + ': "' + topK + '", ' + str(len(topV)))
+
+print('all chained up')
