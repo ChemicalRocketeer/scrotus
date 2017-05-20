@@ -1,27 +1,32 @@
 #! /usr/bin/python
 
 import json
+import os
 from markov import Chain, Prefix
 
 twaats = [
-    json.load(open('condensed_2017.json')),
-    json.load(open('condensed_2016.json')),
-    json.load(open('condensed_2015.json')),
-    json.load(open('condensed_2014.json')),
-    json.load(open('condensed_2013.json')),
-    json.load(open('condensed_2012.json')),
-    json.load(open('condensed_2011.json')),
-    json.load(open('condensed_2010.json')),
-    json.load(open('condensed_2009.json')),
+    json.load(open('tweets/condensed_2017.json')),
+    json.load(open('tweets/condensed_2016.json')),
+    json.load(open('tweets/condensed_2015.json')),
+    json.load(open('tweets/condensed_2014.json')),
+    json.load(open('tweets/condensed_2013.json')),
+    json.load(open('tweets/condensed_2012.json')),
+    json.load(open('tweets/condensed_2011.json')),
+    json.load(open('tweets/condensed_2010.json')),
+    json.load(open('tweets/condensed_2009.json')),
 ]
 
-for length in range(1, 8):
-    c = Chain(length)
+for length in range(1, 6):
+    c = Chain(size=length)
     for twats in twaats:
         for twat in twats:
-            c.rassle(twat['text'])
-    filename = 'trumpov_' + str(length) + '.json'
-    json.dump(c.chain, open(filename, 'w'), indent=2)
+            if twat['is_retweet'] or twat['text'][0:2] == '"@':
+                pass
+            elif twat['source'] == "Twitter for Android":
+                c.rassle(u''+twat['text'])
+    filename = 'chains/trumpov_' + str(length) + '.json'
+    os.makedirs('chains', exist_ok=True)
+    c.save(filename)
     print('wrote ' + filename)
     topK = ''
     topV = []
