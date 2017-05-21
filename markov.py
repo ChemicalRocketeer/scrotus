@@ -112,16 +112,18 @@ class Chain():
                 stweet += word
             else:
                 stweet += ' ' + word
-        parens = 0
-        for char in stweet:
-            if char == '(':
-                parens = parens + 1
-            elif char == ')':
-                parens = parens - 1
-        if parens > 0:
-            stweet = stweet + ')' * parens
-        elif parens < 0:
-            stweet = '(' * parens + stweet
+        # closeparens = 0
+        # openparens = 0
+        # for char in stweet:
+        #     if char == '(':
+        #         closeparens = closeparens + 1
+        #     elif char == ')':
+        #         if closeparens <= 0:
+        #             openparens += 1
+        #         else:
+        #             closeparens = closeparens - 1
+        # stweet = stweet + ')' * closeparens
+        # stweet = '(' * openparens + stweet
         return stweet
 
 if __name__ == "__main__":
