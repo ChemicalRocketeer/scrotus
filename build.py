@@ -14,7 +14,10 @@ twaats = [
     json.load(open('tweets/condensed_2011.json')),
     json.load(open('tweets/condensed_2010.json')),
     json.load(open('tweets/condensed_2009.json')),
+    json.load(open('tweets/redacted.json')),
 ]
+
+dedupe = json.load(open('dedupe.json')) or {}
 
 for length in range(1, 6):
     c = Chain(size=length)
@@ -22,7 +25,8 @@ for length in range(1, 6):
         for twat in twats:
             if twat['is_retweet'] or twat['text'][0:2] == '"@':
                 pass
-            elif twat['source'] == "Twitter for Android":
+            else:
+                dedupe[twat['text']] = True
                 c.rassle(u''+twat['text'])
     filename = 'chains/trumpov_' + str(length) + '.json'
     os.makedirs('chains', exist_ok=True)
@@ -36,4 +40,5 @@ for length in range(1, 6):
             topV = value
     print('favorite key at length ' + str(length) + ': "' + topK + '", ' + str(len(topV)))
 
+json.dump(dedupe, open('dedupe.json', 'w'))
 print('all chained up')
