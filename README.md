@@ -1,4 +1,4 @@
-# scrotus
+# trumpov
 Trump, markov'd
 
 This program auto-generates tweets from Trump using a markov chain, for no reason other than my own enjoyment.
